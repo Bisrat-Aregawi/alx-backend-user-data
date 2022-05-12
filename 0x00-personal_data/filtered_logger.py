@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Module defines `filter_datum` function
 """
-import re
-from typing import List
 import logging
+import mysql.connector
+from os import environ
+import re
+import sys
+from typing import Any, List
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -49,18 +52,29 @@ def filter_datum(
         obfuscated log message
     """
     return separator.join(
-        re.compile(r'|'.join(fld+"=.+" for fld in fields)).sub(
-            msg.split('=')[0]+"="+redaction, msg
+        re.sub(
+            re.compile(r'|'.join(fld+"=.+" for fld in fields)),
+            msg.split('=')[0]+"="+redaction, msg,
         ) for msg in message.split(separator)
     )
 
 
 def get_logger() -> logging.Logger:
     """Return logger object"""
-    logger = logging.Logger("user_data")
+    logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
     sh = logging.StreamHandler()
     sh.setFormatter(RedactingFormatter(list(PII_FIELDS)))
     logger.addHandler(sh)
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Return a database connector object"""
+    return mysql.connector.connect(
+        user=environ.get("PERSONAL_DATA_DB_USERNAME"),
+        password=environ.get("PERSONAL_DATA_DB_PASSWORD"),
+        host=environ.get("PERSONAL_DATA_DB_HOST"),
+        database=environ.get("PERSONAL_DATA_DB_NAME")
+    )
