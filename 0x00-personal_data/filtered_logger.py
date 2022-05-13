@@ -5,8 +5,7 @@ import logging
 import mysql.connector
 from os import environ
 import re
-import sys
-from typing import Any, List
+from typing import List
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -29,7 +28,8 @@ class RedactingFormatter(logging.Formatter):
         """Extended format function from parent class"""
         return filter_datum(
             self.fields, self.REDACTION,
-            logging.Formatter.format(self, record), self.SEPARATOR,
+            logging.Formatter.format(self, record),
+            self.SEPARATOR,
         )
 
 
@@ -51,12 +51,10 @@ def filter_datum(
     Returns:
         obfuscated log message
     """
-    return separator.join(
-        re.sub(
-            re.compile(r'|'.join(fld+"=.+" for fld in fields)),
-            msg.split('=')[0]+"="+redaction, msg,
-        ) for msg in message.split(separator)
-    )
+    return re.sub(
+            r'({})=(.*?){}'.format('|'.join(fields), separator),
+            r'\1={}'.format(redaction), message
+        )
 
 
 def get_logger() -> logging.Logger:
@@ -78,3 +76,33 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         host=environ.get("PERSONAL_DATA_DB_HOST"),
         database=environ.get("PERSONAL_DATA_DB_NAME")
     )
+
+
+def main() -> None:
+    """Logs redacted recrods from MySQL database"""
+    con = get_db()  # Get connection to database
+    cur = con.cursor()  # Get a cursor object from mysql shell
+    query = "SELECT * FROM users;"  # Construct a query
+    cur.execute(query)  # Execute query in and get response object
+
+    # Get column names in a list
+    col = list(map(lambda row: row[0], cur.description))
+    message = []
+    logger = get_logger()
+
+    # construct `column_name`=`data` list for each row and append to message
+    try:
+        for row in cur.fetchall():
+            message.append('; '.join(list(map(
+                    lambda name, value: name+'='+str(value), col, row
+                ))))
+    except Exception as e:
+        print(e)
+    finally:
+        con.close()
+    for msg in message:
+        logger.info(msg)
+
+
+if __name__ == "__main__":
+    main()
