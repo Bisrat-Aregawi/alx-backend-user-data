@@ -2,3 +2,5 @@ __pycache__/
 main.py
 *.csv
 main.sql
+main*.py
+*main.py
