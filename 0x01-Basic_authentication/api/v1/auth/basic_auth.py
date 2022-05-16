@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Module defines `BasicAuth` class"""
-from typing import Union
 from api.v1.auth.auth import Auth
+import base64
+from typing import Union
 
 
 class BasicAuth(Auth):
@@ -26,4 +27,27 @@ class BasicAuth(Auth):
                 return auth_header[1]
             return None
         return None
+
+    def decode_base64_authorization_header(
+        self,
+        base64_authorization_header: str,
+    ) -> Union[str, None]:
+        """Return decoded base64 string
+
+        Args:
+            base64_authorization_header: base64 encoded string
+
+        Returns:
+            decoded `base64_authorization_header` if string,
+            None if can't be decoded or `base64_authorization_header`
+            is not a string
+        """
+        if base64_authorization_header:
+            if isinstance(base64_authorization_header, str):
+                try:
+                    return base64.b64decode(
+                        base64_authorization_header
+                    ).decode('utf-8')
+                except Exception:
+                    return None
     pass
