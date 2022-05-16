@@ -2,7 +2,7 @@
 """Module defines `BasicAuth` class"""
 from api.v1.auth.auth import Auth
 import base64
-from typing import Union
+from typing import Union, Tuple
 
 
 class BasicAuth(Auth):
@@ -25,7 +25,6 @@ class BasicAuth(Auth):
             auth_header = authorization_header.split(' ')
             if auth_header[0] == "Basic":
                 return auth_header[1]
-            return None
         return None
 
     def decode_base64_authorization_header(
@@ -50,4 +49,24 @@ class BasicAuth(Auth):
                     ).decode('utf-8')
                 except Exception:
                     return None
+
+    def extract_user_credentials(
+        self,
+        decoded_base64_authorization_header: str
+    ) -> (str, str):
+        """Return email, password tuple from a decoded string
+
+        Args:
+            decoded_base64_authorization_header: decoded credential string
+
+        Returns:
+            email, password tuple if argument is valid, None,
+            None tuple otherwise
+        """
+        if decoded_base64_authorization_header:
+            if isinstance(decoded_base64_authorization_header, str):
+                if ':' in decoded_base64_authorization_header:
+                    header = decoded_base64_authorization_header.split(':')
+                    return (header[0], header[1])
+        return (None, None)
     pass
