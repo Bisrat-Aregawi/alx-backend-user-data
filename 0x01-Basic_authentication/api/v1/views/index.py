@@ -31,3 +31,10 @@ def unauthorized():
     """ Raise 401 error on request
     """
     abort(401)
+
+
+@app_views.route('/forbidden', strict_slashes=False)
+def forbidden():
+    """ Raise 403 error on request
+    """
+    abort(403)
