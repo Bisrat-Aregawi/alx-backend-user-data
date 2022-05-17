@@ -4,3 +4,4 @@ main.py
 main.sql
 main*.py
 *main.py
+.db_User.json
