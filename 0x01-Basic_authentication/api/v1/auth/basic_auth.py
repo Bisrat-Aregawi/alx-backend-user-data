@@ -96,4 +96,31 @@ class BasicAuth(Auth):
                         return usr
         return None
 
+    def current_user(self, request=None) -> TypeVar('User'):
+        """Overload Auth's `current_user` method
+
+        Return a user if authorization header containes base64 encoded and
+        valid email and password
+
+        Args:
+            request: request object of flask
+
+        Return:
+            User instance if credentials are correct, None otherwise
+        """
+        auth_header = self.authorization_header(request)
+        if not auth_header:
+            return None
+        cred = self.extract_base64_authorization_header(auth_header)
+        if not cred:
+            return None
+        cred_str = self.decode_base64_authorization_header(cred)
+        if not cred_str:
+            return None
+        cred_tuple = self.extract_user_credentials(cred_str)
+        if cred_tuple == (None, None):
+            return None
+        user = self.user_object_from_credentials(*cred_tuple)
+        return user
+
     pass
