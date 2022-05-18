@@ -28,3 +28,14 @@ def handle_login():
             return (jsonify({"error": "wrong password"}), 401)
         return (jsonify({"error": "password missing"}), 400)
     return (jsonify({"error": "email missing"}), 400)
+
+
+@app_views.route(
+    "/auth_session/logout", methods=["DELETE"], strict_slashes=False
+)
+def handle_logout():
+    """Logout route handler"""
+    from api.v1.app import auth
+    if auth.destroy_session(request) is False:
+        abort(404)
+    return (jsonify({}), 200)
