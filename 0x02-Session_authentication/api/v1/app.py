@@ -62,10 +62,13 @@ def filter_req() -> None:
             ]
         )
         if needs_auth is True:
-            if auth.authorization_header(request) is None:
-                abort(401)
-            if auth.session_cookie(request) is None:
-                abort(403)
+            auth_type = type(auth).__name__
+            if auth_type == "BasicAuth":
+                if auth.authorization_header(request) is None:
+                    abort(401)
+            if auth_type == "SessionAuth":
+                if auth.session_cookie(request) is None:
+                    abort(403)
             if auth.current_user(request) is None:
                 abort(403)
             request.current_user = auth.current_user(request)
