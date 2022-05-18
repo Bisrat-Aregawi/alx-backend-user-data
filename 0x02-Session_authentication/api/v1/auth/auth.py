@@ -45,9 +45,17 @@ class Auth():
         """`current_user` function"""
         return None
 
-    def session_cookie(self, request=None):
-        """Return cookie value from a request"""
+    def session_cookie(self, request=None) -> str:
+        """Return cookie value from a request
+
+        Args:
+            request: request object (imported from flask & passed by reference)
+
+        Returns:
+            Value of passed cookie if any, None if request is None
+        """
         sess_name = getenv("SESSION_NAME")
         if request:
             return request.cookies.get(sess_name)
+        return None
     pass

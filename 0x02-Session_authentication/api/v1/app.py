@@ -58,15 +58,18 @@ def filter_req() -> None:
                 "/api/v1/status/",
                 "/api/v1/unauthorized/",
                 "/api/v1/forbidden/",
+                "/api/v1/auth_session/login/"
             ]
         )
-        if needs_auth is not True:
-            return None
-        if auth.authorization_header(request) is None:
-            abort(401)
-        if auth.current_user(request) is None:
-            abort(403)
-        request.current_user = auth.current_user(request)
+        if needs_auth is True:
+            if auth.authorization_header(request) is None:
+                abort(401)
+            if auth.session_cookie(request) is None:
+                abort(403)
+            if auth.current_user(request) is None:
+                abort(403)
+            request.current_user = auth.current_user(request)
+        return None
 
 
 if __name__ == "__main__":
