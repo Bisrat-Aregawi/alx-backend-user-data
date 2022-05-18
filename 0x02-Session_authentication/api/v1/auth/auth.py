@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Module defines `Auth` class"""
+from os import getenv
 import re
 from typing import List, TypeVar, Union
 
@@ -43,4 +44,10 @@ class Auth():
     def current_user(self, request=None) -> TypeVar('User'):
         """`current_user` function"""
         return None
+
+    def session_cookie(self, request=None):
+        """Return cookie value from a request"""
+        sess_name = getenv("SESSION_NAME")
+        if request:
+            return request.cookies.get(sess_name)
     pass
