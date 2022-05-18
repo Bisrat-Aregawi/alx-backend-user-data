@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Module defines `SessionAuth` class"""
 from api.v1.auth.auth import Auth
+from models.user import User
+from typing import TypeVar
 from uuid import uuid4
 
 
@@ -38,5 +40,22 @@ class SessionAuth(Auth):
         if session_id:
             if isinstance(session_id, str):
                 return self.__class__.user_id_by_session_id.get(session_id)
+        return None
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """Overload Auth's `current_user` method
+
+        Return a `User` instance based on a cookie value
+        Args:
+            request: request object of flask
+
+        Return:
+            User instance if credentials are correct, None otherwise
+        """
+        cookie = self.session_cookie(request)
+        if cookie:
+            user_id = self.user_id_for_session_id(cookie)
+            if user_id:
+                return User.get(user_id)
         return None
     pass
