@@ -2,4 +2,4 @@
 from models.user import User
 
 # Load all users from file storage
-# User.load_from_file()
+User.load_from_file()
