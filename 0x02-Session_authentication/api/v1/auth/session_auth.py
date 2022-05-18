@@ -24,4 +24,19 @@ class SessionAuth(Auth):
                 self.__class__.user_id_by_session_id[sessid] = user_id
                 return sessid
         return None
+
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """Return user_id based on a session id
+
+        Args:
+            session_id: session id used to query the dictionary
+            `usre_id_by_session_id`
+
+        Returns:
+            user id, None if session_id is not valid key
+        """
+        if session_id:
+            if isinstance(session_id, str):
+                return self.__class__.user_id_by_session_id.get(session_id)
+        return None
     pass
