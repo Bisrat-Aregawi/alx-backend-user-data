@@ -48,7 +48,7 @@ class DB:
         self._session.commit()
         return new_user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs) -> User:
         """Fetch 'a' user from `users` table
 
         Return the first matched user from `users` table that satisfies
