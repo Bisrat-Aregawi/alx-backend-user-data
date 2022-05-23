@@ -3,7 +3,7 @@
 from typing import Tuple
 from flask.wrappers import Response
 from auth import Auth
-from flask import Flask, request
+from flask import abort, Flask, request
 from flask.json import jsonify
 
 
@@ -42,6 +42,27 @@ def register() -> Tuple[Response, int]:
             }),
             400
         )
+
+
+@app.route("/sessions", methods=["POST"])
+def login() -> Tuple[Response, int]:
+    """
+    Handle login post request
+    """
+    email = request.form.get("email", "")
+    password = request.form.get("password", "")
+    if AUTH.valid_login(email, password) is True:
+        cookie = AUTH.create_session(email)
+        if cookie:
+            out = jsonify(
+                {
+                    "email": "{}".format(email),
+                    "message": "logged in"
+                }
+            )
+            out.set_cookie("session_id", cookie)
+            return (out, 200)
+    abort(401)
 
 
 if __name__ == "__main__":
