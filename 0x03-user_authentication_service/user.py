@@ -25,3 +25,4 @@ class User(Base):
     hashed_password: Column = Column(String(250), nullable=False)
     session_id: Column = Column(String(250))
     reset_token: Column = Column(String(250))
+    pass

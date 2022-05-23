@@ -92,3 +92,4 @@ class DB:
             setattr(usr, k, v)
         self._session.add(usr)
         self._session.commit()
+    pass
