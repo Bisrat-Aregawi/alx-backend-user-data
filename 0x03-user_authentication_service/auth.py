@@ -28,7 +28,7 @@ class Auth:
         self._db = DB()
         return None
 
-    def register_user(self, email, password) -> User:
+    def register_user(self, email: str, password: str) -> User:
         """Register a new user to the database
 
         Args:
