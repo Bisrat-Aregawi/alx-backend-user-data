@@ -71,3 +71,24 @@ class DB:
         if usr:
             return usr
         raise NoResultFound
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """Update an existing record in database with passed keyword arguments.
+
+        Args:
+            user_id: id of user in database
+            kwargs: a `column:value` dictionary to update user instance
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: when argument does not correspond to a user attribute
+        """
+        usr = self.find_user_by(id=user_id)
+        for k, v in kwargs.items():
+            if hasattr(usr, k) is not True:
+                raise ValueError
+            setattr(usr, k, v)
+        self._session.add(usr)
+        self._session.commit()
