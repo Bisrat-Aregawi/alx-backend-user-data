@@ -1,11 +1,10 @@
+#!/usr/bin/env python3
 """DB module
 """
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.session import Session
-
 from user import Base, User
 
 
@@ -16,7 +15,7 @@ class DB:
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
-        self._engine = create_engine("sqlite:///a.db", echo=False)
+        self._engine = create_engine("sqlite:///a.db")
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -30,7 +29,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: bytes) -> User:
+    def add_user(self, email: str, hashed_password: str) -> User:
         """Create and store a new user record to database
 
         Args:
@@ -65,7 +64,7 @@ class DB:
         Raises:
             NoResultFound: raised when nothing was found in `users` table
             InvalidRequestError: raised when kwargs key doesn't resemble any
-            column in `users` table
+            column in `users` table. (Inherited from `Query.filter_by` method)
         """
         usr = self._session.query(User).filter_by(**kwargs).first()
         if usr:
