@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Module defines a flask application"""
-from typing import Tuple
-from flask.wrappers import Response
-from werkzeug.wrappers import Response
 from auth import Auth
-from flask import abort, Flask, redirect, request 
+from flask.wrappers import Response
+from flask import abort, Flask, redirect, request
 from flask.json import jsonify
+from typing import Tuple
+from werkzeug.wrappers import Response
+from sqlalchemy.orm.exc import NoResultFound
 
 
 # Instantiate a WSGI application
@@ -71,10 +72,27 @@ def logout() -> Response:
     """Destory the current user session and redirect to home"""
     sessid = request.cookies.get("session_id")
     if sessid:
-        usr = AUTH._db.find_user_by(session_id=sessid)
+        try:
+            usr = AUTH._db.find_user_by(session_id=sessid)
+        except NoResultFound:
+            abort(403)
         if usr:
             AUTH.destroy_session(int(usr.id))
             return redirect("/")
+    abort(403)
+
+
+@app.route("/profile", methods=["GET"])
+def profile() -> Tuple[Response, int]:
+    """Respond with email for a valid session id"""
+    sessid = request.cookies.get("session_id")
+    if sessid:
+        try:
+            usr = AUTH._db.find_user_by(session_id=sessid)
+        except NoResultFound:
+            abort(403)
+        if usr:
+            return (jsonify({"email": "{}".format(usr.email)}), 200)
     abort(403)
 
 
