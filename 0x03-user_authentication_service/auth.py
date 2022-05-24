@@ -93,4 +93,19 @@ class Auth:
             return sessid
         except NoResultFound:
             pass
+
+    def get_user_from_session_id(self, session_id: str) -> User | None:
+        """Retrieve a user record by session id from database
+
+        Args:
+            session_id: stored session cookie
+
+        Returns:
+            Corresponding user if found, None otherwise
+        """
+        try:
+            usr = self._db.find_user_by(session_id=session_id)
+            return usr
+        except NoResultFound:
+            return None
     pass
