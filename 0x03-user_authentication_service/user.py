@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Module defines `User` class"""
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.schema import Column
-from sqlalchemy.sql.sqltypes import Integer, String
+from sqlalchemy.types import Integer, String
 
 
 Base = declarative_base()
@@ -23,6 +23,6 @@ class User(Base):
     id: Column = Column(Integer, primary_key=True)
     email: Column = Column(String(250), nullable=False)
     hashed_password: Column = Column(String(250), nullable=False)
-    session_id: Column = Column(String(250))
-    reset_token: Column = Column(String(250))
+    session_id: Column = Column(String(250), nullable=True)
+    reset_token: Column = Column(String(250), nullable=True)
     pass
