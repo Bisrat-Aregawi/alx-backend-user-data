@@ -7,26 +7,6 @@ from user import User
 from uuid import uuid4
 
 
-def _hash_password(password: str) -> bytes:
-    """Return hashed and salted password
-
-    Args:
-        password: password string
-
-    Returns:
-        hashed and salted byte string password
-    """
-    return bcrypt.hashpw(
-        password.encode('utf-8'),
-        bcrypt.gensalt()
-    )
-
-
-def _generate_uuid() -> str:
-    """Return a uuid string"""
-    return str(uuid4())
-
-
 class Auth:
     """Auth class to interact with the authentication database."""
 
@@ -121,3 +101,23 @@ class Auth:
         self._db.update_user(user_id, session_id=None)
         return None
     pass
+
+
+def _hash_password(password: str) -> bytes:
+    """Return hashed and salted password
+
+    Args:
+        password: password string
+
+    Returns:
+        hashed and salted byte string password
+    """
+    return bcrypt.hashpw(
+        password.encode("utf-8"),
+        bcrypt.gensalt()
+    )
+
+
+def _generate_uuid() -> str:
+    """Return a uuid string"""
+    return str(uuid4())
