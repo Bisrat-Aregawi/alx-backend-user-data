@@ -16,12 +16,12 @@ app = Flask(__name__)
 AUTH = Auth()
 
 
-@app.route('/', methods=["GET"])
+@app.route('/', methods=["GET"], strict_slashes=False)
 def index():
     return jsonify({"message": "Bienvenue"})
 
 
-@app.route("/users", methods=["POST"])
+@app.route("/users", methods=["POST"], strict_slashes=False)
 def register() -> Tuple[Response, int]:
     """
     Register a new user using passed form data fields
@@ -46,7 +46,7 @@ def register() -> Tuple[Response, int]:
         )
 
 
-@app.route("/sessions", methods=["POST"])
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login() -> Tuple[Response, int]:
     """
     Handle login post request
@@ -67,7 +67,7 @@ def login() -> Tuple[Response, int]:
     abort(401)
 
 
-@app.route("/sessions", methods=["DELETE"])
+@app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout() -> Response:
     """Destory the current user session and redirect to home"""
     sessid = request.cookies.get("session_id")
@@ -82,7 +82,7 @@ def logout() -> Response:
     abort(403)
 
 
-@app.route("/profile", methods=["GET"])
+@app.route("/profile", methods=["GET"], strict_slashes=False)
 def profile() -> Tuple[Response, int]:
     """Respond with email for a valid session id"""
     sessid = request.cookies.get("session_id")
@@ -96,7 +96,7 @@ def profile() -> Tuple[Response, int]:
     abort(403)
 
 
-@app.route("/reset_password", methods=["POST"])
+@app.route("/reset_password", methods=["POST"], strict_slashes=False)
 def get_reset_password_token() -> Response:
     """Respond with a reset token for a valid email"""
     email = request.form.get("email", "")
@@ -112,25 +112,22 @@ def get_reset_password_token() -> Response:
         abort(403)
 
 
-@app.route("/reset_password", method=["PUT"])
+@app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def update_password() -> Response:
-    """Update user password and respond with success json"""
-    email = request.form.get("email")
-    if email:
-        reset_token = request.form.get("reset_token", "")
-        if reset_token:
-            passwd = request.form.get("password", "")
-            try:
-                AUTH.update_password(reset_token, passwd)
-                return jsonify(
-                    {
-                        "email": "{}".format(email),
-                        "message": "Password updated"
-                    }
-                )
-            except ValueError:
-                abort(403)
-    abort(403)
+    """Update user password"""
+    email = request.form.get("email", None)
+    token = request.form.get("reset_token", None)
+    pwd = request.form.get("new_password", None)
+    try:
+        AUTH.update_password(token, pwd)
+        return jsonify(
+            {
+                "email": email,
+                "message": "Password updated"
+            }
+        )
+    except ValueError:
+        abort(403)
 
 
 if __name__ == "__main__":
