@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Authentication relevant methods module"""
+from typing import Union
 import bcrypt
 from db import DB
 from sqlalchemy.orm.exc import NoResultFound
@@ -73,6 +74,24 @@ class Auth:
             return sessid
         except NoResultFound:
             pass
+
+    def get_user_from_session_id(self, session_id: str) -> Union[str, None]:
+        """Retrieve a user record by session id from database
+
+        Args:
+            session_id: stored session cookie
+
+        Returns:
+            Corresponding user if found, None otherwise
+        """
+        try:
+            if session_id:
+                usr = self._db.find_user_by(session_id=session_id)
+                return usr
+            else:
+                return None
+        except NoResultFound:
+            return None
     pass
 
 
