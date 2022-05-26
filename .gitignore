@@ -1,9 +1,7 @@
 __pycache__/
-main.py
 *.csv
 main.sql
-main*.py
-*main.py
+main_*.py
 .db_User.json
 .db_UserSession.json
 *.db
