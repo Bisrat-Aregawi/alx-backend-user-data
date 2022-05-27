@@ -18,6 +18,8 @@ AUTH = Auth()
 
 @app.route('/', methods=["GET"], strict_slashes=False)
 def index():
+    """Index route handler
+    """
     return jsonify({"message": "Bienvenue"})
 
 
@@ -48,8 +50,7 @@ def register() -> Tuple[Response, int]:
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login() -> Tuple[Response, int]:
-    """
-    Handle login post request
+    """Handle login post request
     """
     email = request.form.get("email", "")
     password = request.form.get("password", "")
@@ -69,7 +70,8 @@ def login() -> Tuple[Response, int]:
 
 @app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout() -> Response:
-    """Destory the current user session and redirect to home"""
+    """Destory the current user session and redirect to home
+    """
     sessid = request.cookies.get("session_id")
     if sessid:
         try:
@@ -84,7 +86,8 @@ def logout() -> Response:
 
 @app.route("/profile", methods=["GET"], strict_slashes=False)
 def profile() -> Tuple[Response, int]:
-    """Respond with email for a valid session id"""
+    """Respond with email for a valid session id
+    """
     sessid = request.cookies.get("session_id")
     if sessid:
         try:
@@ -98,7 +101,8 @@ def profile() -> Tuple[Response, int]:
 
 @app.route("/reset_password", methods=["POST"], strict_slashes=False)
 def get_reset_password_token() -> Response:
-    """Respond with a reset token for a valid email"""
+    """Respond with a reset token for a valid email
+    """
     email = request.form.get("email", "")
     try:
         reset_token = AUTH.get_reset_password_token(email)
@@ -114,7 +118,8 @@ def get_reset_password_token() -> Response:
 
 @app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def update_password() -> Response:
-    """Update user password"""
+    """Update user password
+    """
     email = request.form.get("email", None)
     token = request.form.get("reset_token", None)
     pwd = request.form.get("new_password", None)
